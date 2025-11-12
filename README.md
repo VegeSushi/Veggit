@@ -16,7 +16,7 @@ DB_PATH=/var/www/html/database/veggit.sqlite
 MASTER_PASSWORD=supersecret
 
 # Mailtrap config
-MAILTRAP_API_KEY=Your mailtap veryfication key
+MAILTRAP_API_KEY=Your mailtrap verification key
 MAILTRAP_FROM_EMAIL=hello@demomailtrap.co
 MAILTRAP_FROM_NAME=Veggit
 ```
