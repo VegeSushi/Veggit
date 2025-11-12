@@ -1,0 +1,19 @@
+{
+    "name": "vegesushi/veggit",
+    "description": "Reddit inspired website",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Vegesushi\\Veggit\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "VegeSushi"
+        }
+    ],
+    "require": {
+        "delight-im/auth": "^9.0",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

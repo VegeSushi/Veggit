@@ -1,0 +1,33 @@
+services:
+  php:
+    image: php:8.3-fpm
+    container_name: veggit_php
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - .env
+    user: "${HOST_UID}:${HOST_GID}"
+
+  caddy:
+    image: caddy:latest
+    container_name: veggit_caddy
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - php
+
+  composer:
+    image: composer:2
+    container_name: veggit_composer
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    user: "${HOST_UID}:${HOST_GID}"
+
+volumes:
+  db_data:
