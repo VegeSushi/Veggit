@@ -39,6 +39,7 @@ if (!$selector || !$token) {
 <head>
     <meta charset="UTF-8">
     <title>Verify Account - Veggit</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <h2>Account Verification</h2>

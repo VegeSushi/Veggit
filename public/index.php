@@ -49,6 +49,7 @@ if ($loggedIn) {
 <head>
     <meta charset="UTF-8">
     <title>Veggit Homepage</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <header>
@@ -64,7 +65,7 @@ if ($loggedIn) {
 </header>
 
 <main>
-    <p>Welcome to Veggit!</p>
+    
 </main>
 </body>
 </html>
