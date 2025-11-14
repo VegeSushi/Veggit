@@ -31,12 +31,14 @@ $query = "
         COALESCE(ui.profile_picture_url, '') AS profile_picture_url
     FROM users u
     LEFT JOIN user_info ui ON ui.user_id = u.id
+    WHERE u.verified = 1
     ORDER BY u.username COLLATE NOCASE ASC
 ";
 
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
 ?>
 <!DOCTYPE html>

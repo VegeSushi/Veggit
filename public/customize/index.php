@@ -83,7 +83,7 @@ $currentPic = $profile['profile_picture_url'] ?? '';
     <?php endif; ?>
 
     <form method="POST">
-        <label>Bio (uses BBCode)</label><br>
+        <label>Bio (BBCode allowed)</label><br>
         <textarea name="bio" rows="25" style="width:100%;"><?= htmlspecialchars($currentBio) ?></textarea>
         <br><br>
 

@@ -74,6 +74,11 @@ CREATE TABLE "user_posts" (
     CONSTRAINT "user_posts_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON DELETE SET NULL
 );
 
+CREATE TABLE invite_keys (
+    key TEXT PRIMARY KEY,
+    use_count INTEGER DEFAULT 0
+);
+
 CREATE INDEX "user_posts_author_id_ix" ON "user_posts" ("author_id");
 CREATE INDEX "user_posts_date_published_ix" ON "user_posts" ("date_published");
 CREATE INDEX "user_posts_category_id_ix" ON "user_posts" ("category_id");
