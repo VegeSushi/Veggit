@@ -10,48 +10,46 @@ $dotenv->load();
 // Check master password
 $inputPassword = $_POST['master_password'] ?? null;
 
-if (!isset($_ENV['MASTER_PASSWORD']) || $_ENV['MASTER_PASSWORD'] === '') {
-    die('MASTER_PASSWORD not set in .env');
-}
+// Load env vars
+$MASTER_PASSWORD = $_ENV['MASTER_PASSWORD'] ?? '';
+$DB_PATH = $_ENV['DB_PATH'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($inputPassword !== $_ENV['MASTER_PASSWORD']) {
+
+    if ($MASTER_PASSWORD === '') {
+        die('MASTER_PASSWORD not set in .env');
+    }
+    if ($inputPassword !== $MASTER_PASSWORD) {
         die('Invalid master password');
     }
-
-    // Path to SQLite database
-    if (!isset($_ENV['DB_PATH']) || $_ENV['DB_PATH'] === '') {
+    if ($DB_PATH === '') {
         die('DB_PATH not set in .env');
     }
-    $dbPath = $_ENV['DB_PATH'];
 
-    // Make sure directory exists
-    $dir = dirname($dbPath);
-    if (!is_dir($dir) && !mkdir($dir, 0775, true)) {
-        die("Failed to create directory for database: {$dir}");
-    }
+    // Ensure directory exists
+    $dir = dirname($DB_PATH);
+    if (!is_dir($dir)) mkdir($dir, 0775, true);
 
     // Connect to SQLite
     try {
-        $pdo = new PDO("sqlite:$dbPath");
+        $pdo = new PDO("sqlite:$DB_PATH");
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch (\PDOException $e) {
-        die('Database connection failed: ' . $e->getMessage());
+    }
+    catch (PDOException $e) {
+        die("DB error: " . $e->getMessage());
     }
 
-    // Read and execute schema.sql
-    $sqlFile = $projectRoot . 'schema.sql';
-    if (!file_exists($sqlFile)) {
-        die('schema.sql file not found');
-    }
+    // --- Execute schema.sql ---
+    $schema1 = $projectRoot . 'schema.sql';
+    if (!file_exists($schema1)) die("Missing schema.sql");
+    $pdo->exec(file_get_contents($schema1));
+    echo "Executed schema.sql<br>";
 
-    $sql = file_get_contents($sqlFile);
-    try {
-        $pdo->exec($sql);
-        echo "Database schema executed successfully!";
-    } catch (\PDOException $e) {
-        die('Failed to execute schema: ' . $e->getMessage());
-    }
+    // --- Execute schema2.sql ---
+    $schema2 = $projectRoot . 'schema2.sql';
+    if (!file_exists($schema2)) die("Missing schema2.sql");
+    $pdo->exec(file_get_contents($schema2));
+    echo "Executed schema2.sql<br>";
 
     exit;
 }
