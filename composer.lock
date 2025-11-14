@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "355a398dfaadf3e2a6c280b0aa8a7e61",
+    "content-hash": "0c224cf24533dc6456f12d93e0105a71",
     "packages": [
         {
             "name": "delight-im/auth",
@@ -339,6 +339,66 @@
                 }
             ],
             "time": "2024-07-20T21:45:45+00:00"
+        },
+        {
+            "name": "mjohnson/decoda",
+            "version": "6.13.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/milesj/decoda.git",
+                "reference": "5e45580871e4243d2c4d01d3d2e11a74b64b739f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/milesj/decoda/zipball/5e45580871e4243d2c4d01d3d2e11a74b64b739f",
+                "reference": "5e45580871e4243d2c4d01d3d2e11a74b64b739f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=7.3.0"
+            },
+            "require-dev": {
+                "ext-json": "*",
+                "phpstan/phpstan": "^1.2",
+                "phpunit/phpunit": "^9.5"
+            },
+            "suggest": {
+                "ext-memcached": "Cache data using Memcache",
+                "ext-redis": "Cache data using Redis"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Decoda\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Miles Johnson",
+                    "homepage": "http://milesj.me"
+                }
+            ],
+            "description": "A lightweight lexical string parser for BBCode styled markup.",
+            "homepage": "http://milesj.me/code/php/decoda",
+            "keywords": [
+                "HOOK",
+                "bbcode",
+                "decoda",
+                "filter",
+                "lexer",
+                "markup",
+                "parser"
+            ],
+            "support": {
+                "issues": "https://github.com/milesj/decoda/issues",
+                "source": "https://github.com/milesj/decoda"
+            },
+            "time": "2022-11-10T18:39:56+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",

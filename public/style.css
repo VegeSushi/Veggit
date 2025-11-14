@@ -126,3 +126,42 @@ footer {
     padding: 15px 0;
     margin-top: 30px;
 }
+
+.user-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px;
+}
+
+.user-card {
+    background-color: #1b1b1b;     /* Same as your div/section/article background */
+    border: 1px solid #333;
+    padding: 12px;
+    border-radius: 4px;
+    width: 150px;
+    text-align: center;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.user-card:hover {
+    background-color: #222;       /* Slight highlight on hover */
+    border-color: #555;
+}
+
+.user-card img {
+    border-radius: 4px;           /* Matches header img style */
+    border: 1px solid #555;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+}
+
+.user-card a {
+    color: #e0e0e0;               /* Keep text readable */
+    text-decoration: none;
+}
+
+.user-card a:hover {
+    text-decoration: underline;   /* Consistent link hover */
+}
