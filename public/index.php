@@ -62,10 +62,11 @@ if ($loggedIn) {
         <a href="/register"><button>Register</button></a>
         <a href="/login"><button>Login</button></a>
     <?php endif; ?>
+    <a href="/privacy"><button>Privacy Policy</button></a>
 </header>
 
 <main>
-    
+
 </main>
 </body>
 </html>
