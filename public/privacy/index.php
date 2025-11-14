@@ -14,6 +14,7 @@
 <main>
     <section>
         <p>Work in progress</p>
+    </section>
 </main>
 
 <footer>

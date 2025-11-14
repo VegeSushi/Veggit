@@ -1,10 +1,10 @@
 <?php
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use Vegesushi\Veggit\Services\DbService;
 
 // Load database and auth
-$projectRoot = __DIR__ . '/../../';
+$projectRoot = __DIR__ . '/../';
 $dbService = new DbService($projectRoot);
 $auth = $dbService->getAuth();
 

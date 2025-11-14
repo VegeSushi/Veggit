@@ -56,17 +56,21 @@ if ($loggedIn) {
     <?php if ($loggedIn): ?>
         <img src="<?= htmlspecialchars($profilePic) ?>" width="64" height="64" alt="Profile Picture">
         <span><?= htmlspecialchars($username) ?></span>
-        <a href="/logout"><button>Logout</button></a>
+        <a href="/logout.php"><button>Logout</button></a>
     <?php else: ?>
         <img src="<?= htmlspecialchars($defaultPic) ?>" width="64" height="64" alt="Profile Picture">
         <a href="/register"><button>Register</button></a>
         <a href="/login"><button>Login</button></a>
     <?php endif; ?>
-    <a href="/privacy"><button>Privacy Policy</button></a>
 </header>
 
 <main>
 
 </main>
+
+<footer>
+    <a href="/privacy"><button>Privacy Policy</button></a>
+</footer>
+
 </body>
 </html>
