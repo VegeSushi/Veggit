@@ -13,7 +13,7 @@
 
 <main>
     <section>
-        <p>Work in progress</p>
+        <p>We collect only what you send (bios, posts, etc) and your E-Mail. We don't share any data with third parties except the E-Mail which is sent to Mailtrap to share with you your verification link.</p>
     </section>
 </main>
 
