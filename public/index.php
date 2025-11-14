@@ -25,13 +25,13 @@ $profilePic = $defaultPic;
 // Get DB path from .env
 $dbPath = $_ENV['DB_PATH'];
 
-if ($loggedIn) {
-    $userId = $auth->getUserId();
-    $username = $auth->getUsername();
+if (file_exists($dbPath)) {
+    $pdo = new PDO("sqlite:$dbPath");
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if (file_exists($dbPath)) {
-        $pdo = new PDO("sqlite:$dbPath");
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    if ($loggedIn) {
+        $userId = $auth->getUserId();
+        $username = $auth->getUsername();
 
         $stmt = $pdo->prepare('SELECT profile_picture_url FROM user_info WHERE user_id = ?');
         $stmt->execute([$userId]);
@@ -41,6 +41,19 @@ if ($loggedIn) {
             $profilePic = $profile['profile_picture_url'];
         }
     }
+
+    // Fetch first 5 posts with author and category
+    $stmt = $pdo->query("
+        SELECT p.id, p.title, p.short_description, u.username AS author_name, c.name AS category_name
+        FROM user_posts p
+        JOIN users u ON u.id = p.author_id
+        LEFT JOIN categories c ON c.id = p.category_id
+        ORDER BY p.date_published DESC
+        LIMIT 5
+    ");
+    $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    $posts = [];
 }
 ?>
 
@@ -56,6 +69,7 @@ if ($loggedIn) {
     <?php if ($loggedIn): ?>
         <img src="<?= htmlspecialchars($profilePic) ?>" width="64" height="64" alt="Profile Picture">
         <span><?= htmlspecialchars($username) ?></span>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <a href="/logout.php"><button>Logout</button></a>
         <a href="/customize"><button>Customize profile</button></a>
     <?php else: ?>
@@ -66,12 +80,33 @@ if ($loggedIn) {
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <a href="/browse/posts"><button>Browse posts</button></a>
     <a href="/browse/users"><button>Browse users</button></a>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="/post"><button>Post</button></a>
+    <?php if ($loggedIn): ?>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="/create"><button>Post</button></a>
+    <?php endif; ?>
 </header>
 
 <main>
+    <h2>Latest Posts</h2>
 
+    <?php if (!empty($posts)): ?>
+        <?php foreach ($posts as $post): ?>
+            <div class="post-card" onclick="window.location.href='/post?id=<?= $post['id'] ?>'">
+                <h3><?= htmlspecialchars($post['title']) ?></h3>
+                <div class="meta">
+                    Author: <?= htmlspecialchars($post['author_name']) ?>
+                    <?php if ($post['category_name']): ?>
+                        | Category: <?= htmlspecialchars($post['category_name']) ?>
+                    <?php endif; ?>
+                </div>
+                <?php if (!empty($post['short_description'])): ?>
+                    <div class="description"><?= htmlspecialchars($post['short_description']) ?></div>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p>No posts available.</p>
+    <?php endif; ?>
 </main>
 
 <footer>

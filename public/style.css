@@ -165,3 +165,231 @@ footer {
 .user-card a:hover {
     text-decoration: underline;   /* Consistent link hover */
 }
+
+.bio img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.bio code {
+    background-color: #2a2a2a;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+.post-card {
+    background-color: #1b1b1b;
+    border: 1px solid #333;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.post-card:hover {
+    background-color: #2a2a2a;
+}
+
+.post-card h3 {
+     margin: 0 0 5px 0;
+}
+
+.post-card .meta {
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+.post-card .description {
+    margin-top: 8px;
+}
+
+.form-container {
+    max-width: 700px;
+    margin: 20px auto;
+    background-color: #1b1b1b;
+    padding: 20px;
+    border: 1px solid #333;
+    border-radius: 4px;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+    margin-top: 15px;
+}
+
+.form-container input[type="text"],
+.form-container textarea,
+.form-container select {
+    width: 100%;
+}
+
+.form-container button {
+    margin-top: 15px;
+}
+
+.error {
+    color: #ff6666;
+    margin-top: 10px;
+}
+
+.success {
+    color: #66ff66;
+    margin-top: 10px;
+}
+
+/* Header specific for create post */
+header.post-header {
+    background-color: #1f1f1f;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+}
+
+header.post-header button {
+    margin-right: 10px;
+}
+
+/* Post page */
+header.post-header {
+    background-color: #1f1f1f;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+}
+
+header.post-header button {
+    margin-right: 10px;
+}
+
+.post-meta {
+    font-size: 0.9em;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+.post-meta a {
+    color: #8ab4f8;
+    text-decoration: none;
+}
+
+.post-meta a:hover {
+    text-decoration: underline;
+}
+
+.post-short-desc {
+    background-color: #1b1b1b;
+    border: 1px solid #333;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.post-content {
+    background-color: #1f1f1f;
+    border: 1px solid #333;
+    padding: 15px;
+    border-radius: 4px;
+    line-height: 1.6;
+}
+
+/* Ensure BBCode-generated links are styled */
+.post-content a {
+    color: #8ab4f8;
+    text-decoration: none;
+}
+
+.post-content a:hover {
+    text-decoration: underline;
+}
+
+header.post-header {
+    background-color: #1f1f1f;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+}
+
+header.post-header button {
+    margin-right: 10px;
+}
+
+.filter-bar {
+    max-width: 800px;
+    margin: 20px auto;
+    display: flex;
+    gap: 10px;
+}
+
+.filter-bar input[type="text"],
+.filter-bar select {
+    flex: 1;
+    padding: 5px;
+    background-color: #1f1f1f;
+    border: 1px solid #555;
+    color: #e0e0e0;
+    border-radius: 3px;
+}
+
+.filter-bar button {
+    padding: 5px 10px;
+}
+
+.post-card {
+    max-width: 800px;
+    margin: 15px auto;
+    background-color: #1b1b1b;
+    border: 1px solid #333;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.post-card h3 {
+    margin: 0 0 10px 0;
+}
+
+.post-meta {
+    font-size: 0.85em;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+.post-meta a {
+    color: #8ab4f8;
+    text-decoration: none;
+}
+
+.post-meta a:hover {
+    text-decoration: underline;
+}
+
+.post-short-desc {
+    margin-bottom: 10px;
+}
+
+/* Pagination */
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.pagination a, .pagination span {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0 2px;
+    background-color: #1b1b1b;
+    border: 1px solid #333;
+    border-radius: 3px;
+    color: #8ab4f8;
+    text-decoration: none;
+}
+
+.pagination a:hover {
+    background-color: #2a2a2a;
+}
+
+.pagination .current {
+    background-color: #3a3a3a;
+    color: #fff;
+    cursor: default;
+}

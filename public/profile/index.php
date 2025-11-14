@@ -49,10 +49,6 @@ if (empty($pic)) $pic = '/images/carrot.png';
 $decoda = new Decoda($bioRaw);
 $decoda->defaults(); // Load default filters and hooks
 
-// Remove potentially dangerous tags
-$decoda->removeFilter('Video');  // Remove video embeds
-$decoda->removeFilter('Audio');  // Remove audio embeds
-
 // Disable unsafe attributes that could be used for XSS
 $decoda->setXhtml(true);         // Use XHTML-compliant output
 $decoda->setStrict(true);        // Enable strict mode
@@ -72,19 +68,6 @@ $bioHtml = preg_replace('/on\w+\s*=\s*["\'][^"\']*["\']/i', '', $bioHtml); // Re
     <meta charset="UTF-8">
     <title>Profile of <?= htmlspecialchars($username) ?></title>
     <link rel="stylesheet" href="/style.css">
-    <style>
-        .bio img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-        }
-        .bio code {
-            background-color: #2a2a2a;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
-    </style>
 </head>
 <body>
 
