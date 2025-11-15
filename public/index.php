@@ -45,7 +45,7 @@ if (file_exists($dbPath)) {
     // Fetch first 5 posts with author, category, and date
     $stmt = $pdo->query("
         SELECT p.id, p.title, p.short_description, p.date_published,
-               u.username AS author_name, c.name AS category_name
+               u.id AS author_id, u.username AS author_name, c.name AS category_name
         FROM user_posts p
         JOIN users u ON u.id = p.author_id
         LEFT JOIN categories c ON c.id = p.category_id
@@ -96,7 +96,7 @@ if (file_exists($dbPath)) {
                 <h3><?= htmlspecialchars($post['title']) ?></h3>
 
                 <div class="meta">
-                    Author: <?= htmlspecialchars($post['author_name']) ?>
+                    Author: <a href="/profile?id=<?= $post['author_id'] ?>"><?= htmlspecialchars($post['author_name']) ?></a>
 
                     <?php if ($post['category_name']): ?>
                         | Category: <?= htmlspecialchars($post['category_name']) ?>
