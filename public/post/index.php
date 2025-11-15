@@ -54,6 +54,41 @@ $postHtml = preg_replace('/<iframe[^>]*>.*?<\/iframe>/is', '', $postHtml);
 $postHtml = preg_replace('/<script[^>]*>.*?<\/script>/is', '', $postHtml);
 $postHtml = preg_replace('/on\w+\s*=\s*["\'][^"\']*["\']/i', '', $postHtml);
 
+$commentsStmt = $pdo->prepare("
+    SELECT c.id, c.content, c.date_added, u.id AS author_id, u.username AS author_name
+    FROM comments c
+    JOIN users u ON u.id = c.author_id
+    WHERE c.post_id = ?
+    ORDER BY c.date_added DESC
+");
+$commentsStmt->execute([$postId]);
+$comments = $commentsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
+    if ($auth->isLoggedIn()) {
+        $commentContent = trim($_POST['comment_content']);
+        if ($commentContent !== '') {
+            $stmt = $pdo->prepare("
+                INSERT INTO comments (post_id, author_id, content, date_added)
+                VALUES (?, ?, ?, ?)
+            ");
+            $stmt->execute([
+                $postId,
+                $auth->getUserId(),
+                $commentContent,
+                time() // current Unix timestamp
+            ]);
+            // Redirect to avoid resubmission
+            header("Location: ?id=$postId");
+            exit;
+        } else {
+            $commentError = "Comment cannot be empty.";
+        }
+    } else {
+        $commentError = "You must be logged in to post a comment.";
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -85,6 +120,45 @@ $postHtml = preg_replace('/on\w+\s*=\s*["\'][^"\']*["\']/i', '', $postHtml);
     <section class="post-content">
         <?= $postHtml ?>
     </section>
+
+    <section class="comments-section">
+        <h3>Comments (<?= count($comments) ?>)</h3>
+
+        <?php if ($auth->isLoggedIn()): ?>
+            <form method="post" class="comment-form">
+                <textarea name="comment_content" rows="1" placeholder="Write your comment here..." style="resize: none; width: 90%;"  required></textarea>
+                <button type="submit">Send Comment</button>
+            </form>
+            <?php if (!empty($commentError)): ?>
+                <p class="comment-error"><?= htmlspecialchars($commentError) ?></p>
+            <?php endif; ?>
+        <?php else: ?>
+            <p><a href="/login">Log in</a> to post a comment.</p>
+        <?php endif; ?>
+
+        <?php if (count($comments) === 0): ?>
+            <p>No comments yet. Be the first to comment!</p>
+        <?php else: ?>
+            <ul class="comments-list">
+                <?php foreach ($comments as $comment): ?>
+                    <li class="comment-item">
+                        <div class="comment-meta">
+                            <a href="/profile?id=<?= (int)$comment['author_id'] ?>">
+                                <?= htmlspecialchars($comment['author_name']) ?>
+                            </a>
+                            <span class="comment-date">
+                                <?= date('F j, Y H:i', (int)$comment['date_added']) ?>
+                            </span>
+                        </div>
+                        <div class="comment-content">
+                            <?= nl2br(htmlspecialchars($comment['content'])) ?>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+    </section>
+
 </main>
 
 <footer>

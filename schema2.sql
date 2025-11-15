@@ -74,6 +74,19 @@ CREATE TABLE "user_posts" (
     CONSTRAINT "user_posts_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON DELETE SET NULL
 );
 
+-- -------------------------------------------------------
+-- User Comments
+-- -------------------------------------------------------
+CREATE TABLE "comments" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "post_id" INTEGER NOT NULL CHECK ("post_id" >= 0),
+    "author_id" INTEGER NOT NULL CHECK ("author_id" >= 0),
+    "content" TEXT NOT NULL CHECK (LENGTH("content") <= 1000),
+    "date_added" INTEGER NOT NULL CHECK ("date_added" >= 0),
+    CONSTRAINT "comments_post_fk" FOREIGN KEY ("post_id") REFERENCES "user_posts" ("id") ON DELETE CASCADE,
+    CONSTRAINT "comments_author_fk" FOREIGN KEY ("author_id") REFERENCES "users" ("id") ON DELETE CASCADE
+);
+
 CREATE TABLE invite_keys (
     key TEXT PRIMARY KEY,
     use_count INTEGER DEFAULT 0
@@ -82,3 +95,6 @@ CREATE TABLE invite_keys (
 CREATE INDEX "user_posts_author_id_ix" ON "user_posts" ("author_id");
 CREATE INDEX "user_posts_date_published_ix" ON "user_posts" ("date_published");
 CREATE INDEX "user_posts_category_id_ix" ON "user_posts" ("category_id");
+CREATE INDEX "comments_post_id_ix" ON "comments" ("post_id");
+CREATE INDEX "comments_author_id_ix" ON "comments" ("author_id");
+CREATE INDEX "comments_date_added_ix" ON "comments" ("date_added");
