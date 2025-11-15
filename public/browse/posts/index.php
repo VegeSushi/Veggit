@@ -59,7 +59,9 @@ $totalPages = max(1, ceil($totalPosts / $perPage));
 
 // Fetch posts for current page
 $sql = "
-    SELECT p.id, p.title, p.short_description, u.id AS author_id, u.username AS author_name, c.name AS category_name
+    SELECT p.id, p.title, p.short_description, p.date_published,
+           u.id AS author_id, u.username AS author_name,
+           c.name AS category_name
     $sqlBase
     ORDER BY p.date_published DESC
     LIMIT $perPage OFFSET $offset
@@ -102,11 +104,25 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php else: ?>
         <?php foreach ($posts as $post): ?>
             <div class="post-card">
-                <h3><a href="/post?id=<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h3>
+                <h3>
+                    <a href="/post?id=<?= $post['id'] ?>">
+                        <?= htmlspecialchars($post['title']) ?>
+                    </a>
+                </h3>
+
                 <div class="post-meta">
-                    Author: <a href="/profile?id=<?= $post['author_id'] ?>"><?= htmlspecialchars($post['author_name']) ?></a>
-                    <?php if ($post['category_name']): ?> | Category: <?= htmlspecialchars($post['category_name']) ?><?php endif; ?>
+                    Author:
+                    <a href="/profile?id=<?= $post['author_id'] ?>">
+                        <?= htmlspecialchars($post['author_name']) ?>
+                    </a>
+
+                    <?php if ($post['category_name']): ?>
+                        | Category: <?= htmlspecialchars($post['category_name']) ?>
+                    <?php endif; ?>
+
+                    | Published: <?= date("Y-m-d", $post['date_published']) ?>
                 </div>
+
                 <?php if (!empty($post['short_description'])): ?>
                     <div class="post-short-desc"><?= htmlspecialchars($post['short_description']) ?></div>
                 <?php endif; ?>

@@ -40,6 +40,17 @@ $profile = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$profile) die("User not found.");
 
+// Fetch posts by this user
+$postStmt = $pdo->prepare("
+    SELECT p.id, p.title, p.short_description, p.date_published, c.name AS category_name
+    FROM user_posts p
+    LEFT JOIN categories c ON c.id = p.category_id
+    WHERE p.author_id = ?
+    ORDER BY p.date_published DESC
+");
+$postStmt->execute([$id]);
+$userPosts = $postStmt->fetchAll(PDO::FETCH_ASSOC);
+
 $username = $profile['username'];
 $bioRaw    = $profile['bio'] ?? '';
 $pic       = $profile['profile_picture_url'] ?? '/images/carrot.png';
@@ -88,6 +99,37 @@ $bioHtml = preg_replace('/on\w+\s*=\s*["\'][^"\']*["\']/i', '', $bioHtml); // Re
         <div class="bio" style="background-color:#1f1f1f;padding:10px;border:1px solid #333;border-radius:4px;">
             <?= $bioHtml ?>
         </div>
+    </section>
+        
+    <section style="margin-top:40px;">
+        <h3>Posts by <?= htmlspecialchars($username) ?></h3>
+
+        <?php if (empty($userPosts)): ?>
+            <p>This user has not posted anything yet.</p>
+        <?php else: ?>
+            <?php foreach ($userPosts as $post): ?>
+                <div class="post-card">
+                    <h4>
+                        <a href="/post?id=<?= $post['id'] ?>">
+                            <?= htmlspecialchars($post['title']) ?>
+                        </a>
+                    </h4>
+
+                    <div class="post-meta">
+                        <?= date("Y-m-d", $post['date_published']) ?>
+                        <?php if ($post['category_name']): ?>
+                            • <?= htmlspecialchars($post['category_name']) ?>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if (!empty($post['short_description'])): ?>
+                        <div class="post-short-desc">
+                            <?= htmlspecialchars($post['short_description']) ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </section>
 
 </main>

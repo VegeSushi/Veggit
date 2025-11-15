@@ -42,9 +42,10 @@ if (file_exists($dbPath)) {
         }
     }
 
-    // Fetch first 5 posts with author and category
+    // Fetch first 5 posts with author, category, and date
     $stmt = $pdo->query("
-        SELECT p.id, p.title, p.short_description, u.username AS author_name, c.name AS category_name
+        SELECT p.id, p.title, p.short_description, p.date_published,
+               u.username AS author_name, c.name AS category_name
         FROM user_posts p
         JOIN users u ON u.id = p.author_id
         LEFT JOIN categories c ON c.id = p.category_id
@@ -93,12 +94,17 @@ if (file_exists($dbPath)) {
         <?php foreach ($posts as $post): ?>
             <div class="post-card" onclick="window.location.href='/post?id=<?= $post['id'] ?>'">
                 <h3><?= htmlspecialchars($post['title']) ?></h3>
+
                 <div class="meta">
                     Author: <?= htmlspecialchars($post['author_name']) ?>
+
                     <?php if ($post['category_name']): ?>
                         | Category: <?= htmlspecialchars($post['category_name']) ?>
                     <?php endif; ?>
+
+                    | Published: <?= date("Y-m-d", $post['date_published']) ?>
                 </div>
+
                 <?php if (!empty($post['short_description'])): ?>
                     <div class="description"><?= htmlspecialchars($post['short_description']) ?></div>
                 <?php endif; ?>
