@@ -2,16 +2,12 @@
 require __DIR__ . '/../../vendor/autoload.php';
 
 use Vegesushi\Veggit\Services\DbService;
-use Dotenv\Dotenv;
 
-// Load environment
+// Initialize DbService (loads .env, sets up DB and Auth)
 $projectRoot = realpath(__DIR__ . '/../../');
-$dotenv = Dotenv::createImmutable($projectRoot);
-$dotenv->load();
-
-// Init DB + auth
-$dbService = new DbService($projectRoot . '/');
+$dbService = new DbService($projectRoot);
 $auth = $dbService->getAuth();
+$pdo = $dbService->getDb();
 
 // Require login
 if (!$auth->isLoggedIn()) {
@@ -20,13 +16,6 @@ if (!$auth->isLoggedIn()) {
 }
 
 $userId = $auth->getUserId();
-
-// Connect to SQLite
-$dbPath = $_ENV['DB_PATH'] ?? null;
-if (!$dbPath || !file_exists($dbPath)) die("Database not found.");
-
-$pdo = new PDO("sqlite:$dbPath");
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // Fetch categories
 $categoryStmt = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
@@ -59,6 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userId
         ]);
         $success = true;
+
+        // Reset form fields
         $title = $shortDescription = $content = '';
         $categoryId = null;
     }

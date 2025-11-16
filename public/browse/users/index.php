@@ -2,28 +2,16 @@
 require __DIR__ . '/../../../vendor/autoload.php';
 
 use Vegesushi\Veggit\Services\DbService;
-use Dotenv\Dotenv;
 
-// Load .env from project root
+// Initialize DbService (loads .env, sets up DB and Auth)
 $projectRoot = realpath(__DIR__ . '/../../..');
-$dotenv = Dotenv::createImmutable($projectRoot);
-$dotenv->load();
+$dbService = new DbService($projectRoot);
+$pdo = $dbService->getDb();
 
-// Init DB + auth
-$dbService = new DbService($projectRoot . '/');
-$auth = $dbService->getAuth();
-
-// Public path defaults
+// Default profile picture
 $defaultPic = '/images/carrot.png';
 
-// DB file path
-$dbPath = $_ENV['DB_PATH'] ?? ($projectRoot . '/database/veggit.sqlite');
-
-// Connect to DB
-$pdo = new PDO("sqlite:$dbPath");
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-// Fetch users + profile pictures
+// Fetch verified users with optional profile pictures
 $query = "
     SELECT 
         u.id,
@@ -38,9 +26,8 @@ $query = "
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,18 +48,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php foreach ($users as $u): ?>
             <div class="user-card">
                 <a href="/profile?id=<?= htmlspecialchars($u['id']) ?>">
-
-                    <?php
-                        $pic = $defaultPic;
-                        if (!empty($u['profile_picture_url'])) {
-                            $pic = $u['profile_picture_url'];
-                        }
-                    ?>
-
+                    <?php $pic = !empty($u['profile_picture_url']) ? $u['profile_picture_url'] : $defaultPic; ?>
                     <img src="<?= htmlspecialchars($pic) ?>"
                          width="64" height="64"
                          alt="Profile Picture">
-
                     <div><?= htmlspecialchars($u['username'] ?? 'Unknown') ?></div>
                 </a>
             </div>

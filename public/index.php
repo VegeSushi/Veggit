@@ -2,60 +2,45 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Vegesushi\Veggit\Services\DbService;
-use Dotenv\Dotenv;
 
-// Load environment variables from parent of public
-$envPath = realpath(__DIR__ . '/../');
-$dotenv = Dotenv::createImmutable($envPath);
-$dotenv->load();
-
-// Load database and auth
-$projectRoot = __DIR__ . '/../';
+// Initialize DbService (loads .env, sets up DB and Auth)
+$projectRoot = realpath(__DIR__ . '/../');
 $dbService = new DbService($projectRoot);
 $auth = $dbService->getAuth();
+$pdo = $dbService->getDb();
 
 // Default profile picture
-$masterUrl = '/'; 
+$masterUrl = '/';
 $defaultPic = $masterUrl . 'images/carrot.png';
 
 $loggedIn = $auth->isLoggedIn();
 $username = '';
 $profilePic = $defaultPic;
 
-// Get DB path from .env
-$dbPath = $_ENV['DB_PATH'];
+if ($loggedIn) {
+    $userId = $auth->getUserId();
+    $username = $auth->getUsername();
 
-if (file_exists($dbPath)) {
-    $pdo = new PDO("sqlite:$dbPath");
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $stmt = $pdo->prepare('SELECT profile_picture_url FROM user_info WHERE user_id = ?');
+    $stmt->execute([$userId]);
+    $profile = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($loggedIn) {
-        $userId = $auth->getUserId();
-        $username = $auth->getUsername();
-
-        $stmt = $pdo->prepare('SELECT profile_picture_url FROM user_info WHERE user_id = ?');
-        $stmt->execute([$userId]);
-        $profile = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($profile['profile_picture_url'])) {
-            $profilePic = $profile['profile_picture_url'];
-        }
+    if (!empty($profile['profile_picture_url'])) {
+        $profilePic = $profile['profile_picture_url'];
     }
-
-    // Fetch first 5 posts with author, category, and date
-    $stmt = $pdo->query("
-        SELECT p.id, p.title, p.short_description, p.date_published,
-               u.id AS author_id, u.username AS author_name, c.name AS category_name
-        FROM user_posts p
-        JOIN users u ON u.id = p.author_id
-        LEFT JOIN categories c ON c.id = p.category_id
-        ORDER BY p.date_published DESC
-        LIMIT 5
-    ");
-    $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} else {
-    $posts = [];
 }
+
+// Fetch latest 5 posts
+$stmt = $pdo->query("
+    SELECT p.id, p.title, p.short_description, p.date_published,
+           u.id AS author_id, u.username AS author_name, c.name AS category_name
+    FROM user_posts p
+    JOIN users u ON u.id = p.author_id
+    LEFT JOIN categories c ON c.id = p.category_id
+    ORDER BY p.date_published DESC
+    LIMIT 5
+");
+$posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>

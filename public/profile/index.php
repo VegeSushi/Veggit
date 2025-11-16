@@ -2,33 +2,19 @@
 require __DIR__ . '/../../vendor/autoload.php';
 
 use Vegesushi\Veggit\Services\DbService;
-use Dotenv\Dotenv;
 use Decoda\Decoda;
 
-// Load environment
+// Initialize DbService (handles .env, DB, Auth)
 $projectRoot = realpath(__DIR__ . '/../../');
-$dotenv = Dotenv::createImmutable($projectRoot);
-$dotenv->load();
-
-// Init DB + auth
-$dbService = new DbService($projectRoot . '/');
+$dbService = new DbService($projectRoot);
 $auth = $dbService->getAuth();
-
-// Require DB_PATH
-$dbPath = $_ENV['DB_PATH'] ?? null;
-if ($dbPath === null || trim($dbPath) === '') {
-    die("ERROR: DB_PATH is not set in your .env file.");
-}
-
-// Connect to SQLite
-$pdo = new PDO("sqlite:$dbPath");
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$pdo = $dbService->getDb();
 
 // Get user id from query string
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id <= 0) die("Invalid user id.");
 
-// Fetch user + profile
+// Fetch user profile
 $stmt = $pdo->prepare("
     SELECT u.username, ui.bio, ui.profile_picture_url
     FROM users u
@@ -37,10 +23,9 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([$id]);
 $profile = $stmt->fetch(PDO::FETCH_ASSOC);
-
 if (!$profile) die("User not found.");
 
-// Fetch posts by this user
+// Fetch user's posts
 $postStmt = $pdo->prepare("
     SELECT p.id, p.title, p.short_description, p.date_published, c.name AS category_name
     FROM user_posts p
@@ -51,26 +36,22 @@ $postStmt = $pdo->prepare("
 $postStmt->execute([$id]);
 $userPosts = $postStmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Prepare profile data
 $username = $profile['username'];
 $bioRaw    = $profile['bio'] ?? '';
-$pic       = $profile['profile_picture_url'] ?? '/images/carrot.png';
-if (empty($pic)) $pic = '/images/carrot.png';
+$pic       = $profile['profile_picture_url'] ?: '/images/carrot.png';
 
 // --- Decoda Setup ---
 $decoda = new Decoda($bioRaw);
-$decoda->defaults(); // Load default filters and hooks
-
-// Disable unsafe attributes that could be used for XSS
-$decoda->setXhtml(true);         // Use XHTML-compliant output
-$decoda->setStrict(true);        // Enable strict mode
-
-// Parse BBCode to HTML
+$decoda->defaults();
+$decoda->setXhtml(true);
+$decoda->setStrict(true);
 $bioHtml = $decoda->parse();
 
-// Additional sanitization to strip iframes and scripts
+// Additional sanitization to remove unsafe elements
 $bioHtml = preg_replace('/<iframe[^>]*>.*?<\/iframe>/is', '', $bioHtml);
 $bioHtml = preg_replace('/<script[^>]*>.*?<\/script>/is', '', $bioHtml);
-$bioHtml = preg_replace('/on\w+\s*=\s*["\'][^"\']*["\']/i', '', $bioHtml); // Remove inline event handlers
+$bioHtml = preg_replace('/on\w+\s*=\s*["\'][^"\']*["\']/i', '', $bioHtml);
 
 ?>
 <!DOCTYPE html>

@@ -2,16 +2,12 @@
 require __DIR__ . '/../../vendor/autoload.php';
 
 use Vegesushi\Veggit\Services\DbService;
-use Dotenv\Dotenv;
 
-// Load .env from project root
+// Initialize DbService (loads .env, sets up DB and Auth)
 $projectRoot = realpath(__DIR__ . '/../../');
-$dotenv = Dotenv::createImmutable($projectRoot);
-$dotenv->load();
-
-// Init DB + auth
-$dbService = new DbService($projectRoot . '/');
+$dbService = new DbService($projectRoot);
 $auth = $dbService->getAuth();
+$pdo = $dbService->getDb();
 
 // Redirect if not logged in
 if (!$auth->isLoggedIn()) {
@@ -20,17 +16,6 @@ if (!$auth->isLoggedIn()) {
 }
 
 $userId = $auth->getUserId();
-
-// --- DB PATH (NO DEFAULT VALUE) ---
-$dbPath = $_ENV['DB_PATH'] ?? null;
-
-if ($dbPath === null || trim($dbPath) === '') {
-    die("ERROR: DB_PATH is not set in your .env file.");
-}
-
-// Connect
-$pdo = new PDO("sqlite:$dbPath");
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // Handle form submission
 $message = '';
@@ -88,8 +73,7 @@ $currentPic = $profile['profile_picture_url'] ?? '';
         <br><br>
 
         <label>Profile Picture URL</label><br>
-        <input type="text" name="profile_picture_url" style="width:100%;"
-               value="<?= htmlspecialchars($currentPic) ?>">
+        <input type="text" name="profile_picture_url" style="width:100%;" value="<?= htmlspecialchars($currentPic) ?>">
         <br><br>
 
         <button type="submit">Save Changes</button>

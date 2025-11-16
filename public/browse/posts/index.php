@@ -2,35 +2,24 @@
 require __DIR__ . '/../../../vendor/autoload.php';
 
 use Vegesushi\Veggit\Services\DbService;
-use Dotenv\Dotenv;
 
-// Load environment
+// Initialize DbService (handles .env, DB, Auth)
 $projectRoot = realpath(__DIR__ . '/../../../');
-$dotenv = Dotenv::createImmutable($projectRoot);
-$dotenv->load();
-
-// Init DB
-$dbService = new DbService($projectRoot . '/');
-
-// DB path
-$dbPath = $_ENV['DB_PATH'] ?? null;
-if (!$dbPath || !file_exists($dbPath)) die("Database not found.");
-
-$pdo = new PDO("sqlite:$dbPath");
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$dbService = new DbService($projectRoot);
+$pdo = $dbService->getDb();
 
 // Fetch categories
 $categoryStmt = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
 $categories = $categoryStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Query params
+// Get query params
 $search = trim($_GET['search'] ?? '');
 $categoryId = isset($_GET['category']) && is_numeric($_GET['category']) ? (int)$_GET['category'] : null;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $perPage = 10;
 $offset = ($page - 1) * $perPage;
 
-// Build base query
+// Build base SQL
 $sqlBase = "
     FROM user_posts p
     JOIN users u ON u.id = p.author_id
@@ -69,8 +58,8 @@ $sql = "
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
