@@ -10,6 +10,9 @@ $dbService = new DbService($projectRoot);
 $auth = $dbService->getAuth();
 $pdo = $dbService->getDb();
 
+$masterUrl = '/';
+$defaultPic = $masterUrl . 'images/carrot.png';
+
 // Get post id from query string
 $postId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($postId <= 0) {
@@ -18,9 +21,13 @@ if ($postId <= 0) {
 
 // Fetch post, author, category
 $stmt = $pdo->prepare("
-    SELECT p.title, p.short_description, p.content, u.id AS author_id, u.username AS author_name, c.name AS category_name
+    SELECT p.title, p.short_description, p.content,
+           u.id AS author_id, u.username AS author_name,
+           ui.profile_picture_url AS author_pfp,
+           c.name AS category_name
     FROM user_posts p
     JOIN users u ON u.id = p.author_id
+    LEFT JOIN user_info ui ON ui.user_id = u.id
     LEFT JOIN categories c ON c.id = p.category_id
     WHERE p.id = ?
 ");
@@ -46,9 +53,12 @@ $postHtml = preg_replace('/on\w+\s*=\s*["\'][^"\']*["\']/i', '', $postHtml);
 
 // Fetch comments
 $commentsStmt = $pdo->prepare("
-    SELECT c.id, c.content, c.date_added, u.id AS author_id, u.username AS author_name
+    SELECT c.id, c.content, c.date_added,
+           u.id AS author_id, u.username AS author_name,
+           ui.profile_picture_url AS author_pfp
     FROM comments c
     JOIN users u ON u.id = c.author_id
+    LEFT JOIN user_info ui ON ui.user_id = u.id
     WHERE c.post_id = ?
     ORDER BY c.date_added DESC
 ");
@@ -99,6 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
     <h2><?= htmlspecialchars($post['title']) ?></h2>
 
     <div class="post-meta">
+        <img src="<?= htmlspecialchars(!empty($post['author_pfp']) ? $post['author_pfp'] : $defaultPic) ?>" alt="Author Picture" class="pfp">
         Author: <a href="/profile?id=<?= $post['author_id'] ?>"><?= htmlspecialchars($post['author_name']) ?></a>
         <?php if ($post['category_name']): ?>
             | Category: <?= htmlspecialchars($post['category_name']) ?>
@@ -135,6 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
                 <?php foreach ($comments as $comment): ?>
                     <li class="comment-item">
                         <div class="comment-meta">
+                            <img src="<?= htmlspecialchars(!empty($comment['author_pfp']) ? $comment['author_pfp'] : $defaultPic) ?>" alt="Commenter Picture" class="comment-pfp">
                             <a href="/profile?id=<?= (int)$comment['author_id'] ?>">
                                 <?= htmlspecialchars($comment['author_name']) ?>
                             </a>

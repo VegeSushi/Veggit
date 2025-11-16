@@ -393,3 +393,21 @@ header.post-header button {
     color: #fff;
     cursor: default;
 }
+
+/* Post author + comment pfp */
+.pfp, .comment-pfp {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;  /* matches your existing small rounded style */
+    object-fit: cover;
+    margin-right: 6px;
+    border: 1px solid #555; /* consistent with your theme */
+}
+
+/* Align pfps + text nicely */
+.post-meta,
+.comment-meta {
+    display: flex;
+    align-items: center;   /* vertically center */
+    gap: 6px;              /* small space between pfp + text */
+}
