@@ -411,3 +411,44 @@ header.post-header button {
     align-items: center;   /* vertically center */
     gap: 6px;              /* small space between pfp + text */
 }
+
+
+/* --- Unified Comment Blob Style --- */
+
+.comments-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.comment-item {
+    background-color: #1b1b1b;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+/* Remove background from inner sections so they look unified */
+.comment-meta,
+.comment-content {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Divider line between meta and content */
+.comment-meta {
+    padding-bottom: 6px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 8px;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.comment-content {
+    line-height: 1.5;
+}
