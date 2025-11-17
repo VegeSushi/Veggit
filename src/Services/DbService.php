@@ -32,6 +32,8 @@ class DbService
         try {
             $this->db = new PDO($dsn);
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->db->setAttribute(PDO::ATTR_TIMEOUT, 5);
+            $this->db->exec('PRAGMA journal_mode=WAL;');
         } catch (\PDOException $e) {
             throw new \RuntimeException('Database connection failed: ' . $e->getMessage());
         }
